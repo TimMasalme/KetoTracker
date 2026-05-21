@@ -1,127 +1,115 @@
 # KetoTrack
 
-Persönlicher Keto-Diät Tracker — läuft als Web-App, Android-App, iOS-App und Desktop-App.
+A free, ad-free personal keto diet tracker. Available as an Android app and Windows desktop app.
 
-## Stack
-
-| Schicht | Technologie |
-|---------|-------------|
-| UI | React 18 + TypeScript |
-| Styling | Tailwind CSS |
-| State | Zustand (mit localStorage Persistenz) |
-| Charts | Recharts |
-| Mobile | Capacitor (Android / iOS) |
-| Desktop | Electron |
-| Build | Vite |
-
----
-
-## Schnellstart (Web / PWA)
-
-```bash
-npm install
-npm run dev
-```
-
-App läuft auf http://localhost:5173
-
----
-
-## Android / iOS (Capacitor)
-
-```bash
-# Erst bauen
-npm run build
-
-# Plattformen einrichten (einmalig)
-npm run cap:add:android
-npm run cap:add:ios
-
-# Dateien synchronisieren
-npm run cap:sync
-
-# In Android Studio öffnen
-npm run cap:open:android
-```
-
-> Voraussetzung: Android Studio + JDK 17 installiert
-
----
-
-## Desktop App (Electron)
-
-```bash
-# Entwicklung
-npm run electron:dev
-
-# Installer bauen
-npm run electron:build
-```
-
----
-
-## Projektstruktur
-
-```
-keto-tracker/
-├── src/
-│   ├── types/           # Alle TypeScript Interfaces
-│   │   └── index.ts
-│   ├── store/           # Zustand Store (zentraler State)
-│   │   └── index.ts
-│   ├── hooks/           # Custom React Hooks
-│   │   └── index.ts
-│   ├── utils/
-│   │   └── calculations.ts  # TDEE, Makros, KFA, Rating
-│   ├── components/
-│   │   ├── layout/      # Navigation (Sidebar + Bottom Nav)
-│   │   ├── dashboard/   # Übersicht + Charts
-│   │   ├── macros/      # Essen-Log + Einträge
-│   │   ├── fasting/     # Fasten-Timer
-│   │   ├── sport/       # Sport-Tracking
-│   │   ├── weight/      # Gewichtsverlauf
-│   │   ├── recipes/     # Rezepte-Datenbank
-│   │   └── settings/    # Profil + Makro-Ziele
-│   ├── index.css        # Global Styles + Tailwind
-│   ├── main.tsx         # Einstiegspunkt
-│   └── App.tsx          # Root Component
-├── public/
-│   └── manifest.json    # PWA Manifest
-├── capacitor.config.ts  # Mobile Konfiguration
-├── electron.js          # Desktop Hauptprozess
-├── tailwind.config.js   # Design-Tokens (Farben, Fonts)
-└── vite.config.ts
-```
+![Version](https://img.shields.io/badge/version-1.0.0-green) ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ---
 
 ## Features
 
-### ✅ Implementiert
-- **Dashboard** — Tagesübersicht, Ketose-Status, 7-Tage Charts, Tagesbewertungen
-- **Makros** — Essen-Log, Fortschrittsbalken, Quick-Add aus häufigen Rezepten
-- **Fasten** — Timer mit Live-Anzeige, 16:8 / 18:6 / 20:4 / 24h Protokolle
-- **Sport** — Einheiten loggen, kcal-Verbrauch, Kategorien
-- **Gewicht** — Verlaufsgraph, KFA-Berechnung (US Navy), Zielgewicht-Linie
-- **Rezepte** — CRUD, Favoriten, Häufigkeits-Tracking, Kategorien, Tags
-- **Einstellungen** — Profil, TDEE-Berechnung, manuelle Makro-Ziele
-
-### 🔧 Berechnungen
-- TDEE via Mifflin-St Jeor (männlich)
-- Körperfettanteil via US Navy Method
-- Tagesbewertung (excellent / good / okay / bad)
-- Keto-Makro-Split: 70% Fett / 25% Protein / 5% Carbs (max 20g)
+- **Dashboard** — Daily macro overview, ketosis status, 7-day trend charts and day ratings
+- **Macros** — Food log with barcode scanner, net carb calculation, quick-add from recipes
+- **Fasting** — Live timer with 16:8 / 18:6 / 20:4 / 24h protocols, push notification on completion
+- **Exercise** — Log workouts by category, track calories burned
+- **Weight** — History graph with 7-day moving average, body fat % (US Navy method), goal weight line
+- **Recipes** — Full recipe database with favorites, tags and categories
+- **Calendar** — Monthly overview of keto days and daily nutrition
+- **Export / Import** — CSV, HTML report, full JSON backup and restore
+- **Settings** — TDEE calculator, manual macro goals, profile management
+- **Multilingual** — German and English
 
 ---
 
-## Design System
+## Tech Stack
 
-| Token | Wert |
-|-------|------|
-| Hintergrund | `#f8f4ec` (Warm Cream) |
-| Karten | `#ffffff` |
-| Text | `#1a1a18` (Charcoal) |
-| Ketose ✅ | `#3d6b4f` (Forest Green) |
-| Warnung | `#c49a2a` (Amber) |
-| Überlimit | `#b03a2e` (Brick Red) |
-| Schrift | DM Sans (UI) · Playfair Display (Headlines) |
+| Layer | Technology |
+|-------|------------|
+| UI | React 18 + TypeScript |
+| Styling | Tailwind CSS |
+| State | Zustand (localStorage persistence) |
+| Charts | Recharts |
+| Mobile | Capacitor (Android) |
+| Desktop | Electron |
+| Build | Vite |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Install & Run
+
+```bash
+git clone https://github.com/timmasalme/KetoTracker.git
+cd KetoTracker
+npm install --legacy-peer-deps
+npm run dev
+```
+
+App runs at `http://localhost:5173`
+
+### Build
+
+```bash
+# Web / PWA
+npm run build
+
+# Windows installer
+npm run electron:build
+
+# Android APK (requires Android Studio + JDK 17)
+npm run build
+npm run cap:add:android   # first time only
+npm run cap:sync
+npm run cap:open:android  # then build in Android Studio
+```
+
+---
+
+## Project Structure
+
+```
+keto-tracker/
+├── src/
+│   ├── types/              # TypeScript interfaces
+│   ├── store/              # Zustand store (central state)
+│   ├── hooks/              # Custom React hooks
+│   ├── utils/              # TDEE, macros, body fat calculations
+│   ├── notifications/      # Push notification logic
+│   └── components/
+│       ├── layout/         # Navigation (sidebar + bottom nav)
+│       ├── dashboard/      # Overview + charts
+│       ├── macros/         # Food log + barcode scanner
+│       ├── fasting/        # Fasting timer
+│       ├── sport/          # Exercise tracking
+│       ├── weight/         # Weight history
+│       ├── recipes/        # Recipe database
+│       ├── calendar/       # Calendar view
+│       ├── export/         # Data export & import
+│       ├── support/        # Support page
+│       └── settings/       # Profile + macro goals
+├── assets/                 # Source icons (for capacitor-assets)
+├── public/                 # Static assets (favicons, manifests)
+├── build/                  # Electron build resources
+├── capacitor.config.ts     # Capacitor configuration
+├── electron.js             # Electron main process
+├── tailwind.config.js      # Design tokens
+└── vite.config.ts
+```
+
+---
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first.
+
+---
+
+## License
+
+MIT © Tim El Masalme
