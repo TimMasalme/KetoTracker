@@ -126,4 +126,4 @@ export interface DayRating {
 }
 
 // ─── APP STATE ────────────────────────────────────────────────────────────────
-export type ActiveTab = 'dashboard' | 'macros' | 'fasting' | 'calendar' | 'sport' | 'weight' | 'recipes' | 'export' | 'settings' | 'support'
+export type ActiveTab = 'dashboard' | 'macros' | 'fasting' | 'calendar' | 'sport' | 'weight' | 'recipes' | 'export' | 'settings' | 'support' | 'ketochecker'

@@ -13,6 +13,16 @@ const config: CapacitorConfig = {
       backgroundColor: '#f8f4ec',
       showSpinner: false,
     },
+    // Bugfix 1: Camera permission config for Capacitor
+    Camera: {
+      permissionType: 'camera',
+    },
+    // Bugfix 2: Local Notifications config
+    LocalNotifications: {
+      smallIcon: 'ic_stat_icon_config_sample',
+      iconColor: '#5d8a5e',
+      sound: 'beep.wav',
+    },
   },
   // Android: res/mipmap icons are handled by capacitor-assets
   // iOS: Assets.xcassets/AppIcon.appiconset – run: npx capacitor-assets generate

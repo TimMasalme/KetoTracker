@@ -10,7 +10,7 @@ import {
 import { Flame, Target, TrendingDown, Circle, TrendingUp, Dumbbell } from 'lucide-react'
 
 export default function Dashboard() {
-  const { totals, netCarbsToday, rating, inKetosis, kcalBurned } = useToday()
+  const { totals, netCarbsToday, rating, ratingDetails, inKetosis, kcalBurned } = useToday()
   const targets    = useKetoStore((s) => s.macroTargets)
   const profile    = useKetoStore((s) => s.profile)
   const weightLog  = useKetoStore((s) => s.weightLog)
@@ -84,6 +84,9 @@ export default function Dashboard() {
         <p className="text-xs text-cream-400 mt-0.5">
           {tr.todaySummary}: {Math.round(netKcal)} kcal {tr.nettoLabel} · {netCarbsToday}g {tr.netCarbsLabel} · {Math.round(totals.proteinG)}g {tr.proteinLabel}
           {kcalBurned > 0 && <span className="text-green-600 inline-flex items-center gap-1"> · <Dumbbell size={12} /> -{kcalBurned} {tr.exerciseShort}</span>}
+        </p>
+        <p className={`text-[10px] mt-1.5 font-medium ${rc.color} opacity-80`}>
+          {tr.ratingReason(ratingDetails.carbsOk, ratingDetails.kcalOk, ratingDetails.proteinOk)}
         </p>
       </div>
 

@@ -12,6 +12,7 @@ import ExportPage from '@/components/export/ExportPage'
 import SettingsPage from '@/components/settings/SettingsPage'
 import LangPicker from '@/components/onboarding/LangPicker'
 import SupportPage from '@/components/support/SupportPage'
+import KetoCheckerPage from '@/components/ketochecker/KetoCheckerPage'
 
 export default function App() {
   useNotifications()
@@ -40,7 +41,8 @@ export default function App() {
     recipes:   <RecipesPage />,
     export:    <ExportPage />,
     settings:  <SettingsPage />,
-    support:   <SupportPage />,
+    support:      <SupportPage />,
+    ketochecker:  <KetoCheckerPage />,
   }
 
   return (

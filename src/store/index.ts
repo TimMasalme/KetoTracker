@@ -25,6 +25,9 @@ interface KetoStore {
   activeTab: ActiveTab
   setActiveTab: (tab: ActiveTab) => void
 
+  bottomNavIds: ActiveTab[]
+  setBottomNavIds: (ids: ActiveTab[]) => void
+
   lang: Lang
   setLang: (lang: Lang) => void
 
@@ -81,6 +84,9 @@ export const useKetoStore = create<KetoStore>()(
 
       activeTab: 'dashboard',
       setActiveTab: (tab) => set({ activeTab: tab }),
+
+      bottomNavIds: ['dashboard', 'macros', 'fasting', 'ketochecker'],
+      setBottomNavIds: (ids) => set({ bottomNavIds: ids }),
 
       lang: 'en',
       setLang: (lang) => set({ lang }),

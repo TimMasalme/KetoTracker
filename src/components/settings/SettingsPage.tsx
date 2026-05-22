@@ -2,9 +2,13 @@ import { useState } from 'react'
 import { useKetoStore } from '@/store'
 import { t } from '@/i18n'
 import { calculateMacroTargets, calculateBodyFatPercent, calculateAge } from '@/utils/calculations'
-import { Save, RefreshCw, Bell } from 'lucide-react'
+import { Save, RefreshCw, Bell, Smartphone, LayoutGrid } from 'lucide-react'
 import type { UserProfile } from '@/types'
+import type { ActiveTab } from '@/types'
 import { scheduleReminders } from '@/notifications/useNotifications'
+import DeviceLinkModal from '@/sync/DeviceLinkModal'
+import { useSyncStore } from '@/sync/useSyncStore'
+import { allNavItems } from '@/components/layout/Layout'
 
 const blankProfile: UserProfile = {
   name: '', birthDate: '', heightCm: 0, startWeightKg: 0,
@@ -55,11 +59,17 @@ export default function SettingsPage() {
   const [form, setForm] = useState<FormStr>(profileToStr(profile ?? blankProfile))
   const [macros, setMacros] = useState(macroTargets)
   const [saved, setSaved]   = useState(false)
+  const [showSync, setShowSync] = useState(false)
+
+  const lastSyncedAt = useSyncStore((s) => s.lastSyncedAt)
 
   const notifPrefs    = useKetoStore((s) => s.notifPrefs)
   const setNotifPrefs = useKetoStore((s) => s.setNotifPrefs)
   const [notifSaved, setNotifSaved] = useState(false)
   const [notifDenied, setNotifDenied] = useState(false)
+
+  const bottomNavIds    = useKetoStore((s) => s.bottomNavIds)
+  const setBottomNavIds = useKetoStore((s) => s.setBottomNavIds)
 
   const isOnboarding = !profile
 
@@ -336,12 +346,94 @@ export default function SettingsPage() {
         </button>
       </div>
 
+      {/* ── Bottom Navigation customization ──────────────────────── */}
+      <div className="card space-y-3 md:hidden">
+        <div className="flex items-center gap-2">
+          <LayoutGrid size={16} className="text-accent-green" />
+          <h3 className="text-sm font-semibold">
+            {lang === 'de' ? 'Navigation anpassen' : 'Customize Navigation'}
+          </h3>
+        </div>
+        <p className="text-xs text-cream-400">
+          {lang === 'de'
+            ? 'Wähle bis zu 4 Tabs, die in der unteren Leiste erscheinen.'
+            : 'Choose up to 4 tabs to show in the bottom bar.'}
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {allNavItems.map((item) => {
+            const isSelected = bottomNavIds.includes(item.id as ActiveTab)
+            const selectedIndex = bottomNavIds.indexOf(item.id as ActiveTab)
+            const isAtLimit = bottomNavIds.length >= 4 && !isSelected
+
+            function toggleItem() {
+              if (isSelected) {
+                // Always allow deselect
+                setBottomNavIds(bottomNavIds.filter((id) => id !== item.id))
+              } else if (!isAtLimit) {
+                setBottomNavIds([...bottomNavIds, item.id as ActiveTab])
+              }
+            }
+
+            return (
+              <button
+                key={item.id}
+                onClick={toggleItem}
+                disabled={isAtLimit}
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl border text-sm font-medium
+                  transition-all text-left
+                  ${isSelected
+                    ? 'border-charcoal-900 bg-charcoal-900 text-cream-50'
+                    : isAtLimit
+                      ? 'border-cream-200 bg-cream-50 text-cream-300 cursor-not-allowed'
+                      : 'border-cream-200 bg-white text-charcoal-800 hover:bg-cream-100'
+                  }`}
+              >
+                <span className="shrink-0">{item.icon}</span>
+                <span className="truncate flex-1">{tr[item.labelKey] as string}</span>
+                {isSelected && (
+                  <span className="shrink-0 flex items-center justify-center w-4 h-4 rounded-full bg-cream-50/20 text-[10px] font-bold">
+                    {selectedIndex + 1}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+        <p className="text-xs text-cream-400 text-center">
+          {lang === 'de'
+            ? `${bottomNavIds.length}/4 ausgewählt`
+            : `${bottomNavIds.length}/4 selected`}
+        </p>
+      </div>
+
       {/* Save */}
       <button onClick={handleSave} className={`btn-primary w-full flex items-center justify-center gap-2
         ${saved ? '!bg-accent-green' : ''}`}>
         <Save size={16} />
         {saved ? tr.savedOk : isOnboarding ? tr.createProfile : tr.save}
       </button>
+
+      {/* Device Sync */}
+      <div className="card space-y-3">
+        <div className="flex items-center gap-2">
+          <Smartphone size={16} className="text-accent-green" />
+          <h3 className="text-sm font-semibold">{tr.linkDevicesTitle}</h3>
+        </div>
+        {lastSyncedAt && (
+          <p className="text-xs text-cream-400">
+            {tr.lastSynced}: {new Date(lastSyncedAt).toLocaleTimeString()}
+          </p>
+        )}
+        <button
+          onClick={() => setShowSync(true)}
+          className="btn-ghost w-full flex items-center justify-center gap-2 text-sm"
+        >
+          <Smartphone size={15} />
+          {tr.linkDevicesBtn}
+        </button>
+      </div>
+
+      {showSync && <DeviceLinkModal onClose={() => setShowSync(false)} />}
 
       <p className="text-center text-xs text-cream-400">
         KetoTrack {tr.version} · {tr.footerLocal}

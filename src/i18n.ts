@@ -6,7 +6,7 @@ export const t = {
     // Nav
     dashboard: 'Übersicht', macros: 'Makros', fasting: 'Fasten',
     calendar: 'Kalender', sport: 'Sport', weight: 'Gewicht',
-    recipes: 'Rezepte', export: 'Export', settings: 'Einstellungen', support: 'Unterstützung',
+    recipes: 'Rezepte', export: 'Export', settings: 'Einstellungen', support: 'Unterstützung', ketoChecker: 'Keto-Check',
     // Calendar
     calendarTitle: 'Kalender',
     noEntries: 'Keine Einträge für diesen Tag',
@@ -61,6 +61,27 @@ export const t = {
     savedOk: 'Gespeichert ✓',
     createProfile: 'Profil erstellen & starten',
     footerLocal: 'Alle Daten lokal gespeichert',
+    // Sync
+    linkDevicesTitle: 'Geräte verknüpfen',
+    linkDevicesBtn: 'Gerät verknüpfen',
+    yourDeviceId: 'Deine Geräte-ID',
+    lastSynced: 'Zuletzt synchronisiert',
+    syncHostTitle: 'Gerät anzeigen',
+    syncHostDesc: 'QR-Code anzeigen, den das andere Gerät scannt',
+    syncJoinTitle: 'Verbinden',
+    syncJoinDesc: 'Code des anderen Geräts eingeben',
+    syncHostInstructions: 'Scanne diesen QR-Code mit deinem anderen Gerät oder gib den Code manuell ein.',
+    syncJoinInstructions: 'Gib den Code ein, der auf dem anderen Gerät angezeigt wird.',
+    orEnterCode: 'oder Code manuell eingeben',
+    enterDeviceCode: 'Geräte-Code',
+    syncConnect: 'Verbinden',
+    syncConnecting: 'Verbinde …',
+    syncConnected: 'Verbunden',
+    syncSyncing: 'Synchronisiere …',
+    syncDone: 'Sync abgeschlossen ✓',
+    syncError: 'Verbindungsfehler',
+    syncRetry: 'Erneut versuchen',
+    back: 'Zurück',
     // Sport
     sportTitle: 'Sport',
     addSession: 'Einheit',
@@ -110,6 +131,14 @@ export const t = {
     ratingGood: 'Guter Tag',
     ratingOkay: 'Okay-Tag',
     ratingBad: 'Verbesserbar',
+    ratingReason: (carbsOk: boolean, kcalOk: boolean, proteinOk: boolean) => {
+      const good: string[] = []
+      const bad: string[] = []
+      if (carbsOk) good.push('Carbs im Ziel ✓'); else bad.push('Carbs überschritten ✗')
+      if (kcalOk) good.push('Kalorien im Zielbereich ✓'); else bad.push('Kalorien außerhalb Zielbereich ✗')
+      if (proteinOk) good.push('Protein erreicht ✓'); else bad.push('Protein zu niedrig ✗')
+      return [...good, ...bad].join(' · ')
+    },
     inKetosis: 'In Ketose',
     outOfKetosis: 'Außer Ketose',
     todaySummary: 'Heute',
@@ -287,13 +316,18 @@ export const t = {
     notifSaveOk: 'Erinnerungen gespeichert ✓',
     notifPermDenied: 'Benachrichtigungen sind deaktiviert – bitte in den Systemeinstellungen erlauben.',
         // General
-    version: 'v1.0.0',
+    version: 'v1.1.0',
     tagline: 'Dein Keto-Begleiter',
+    // Update dialog
+    updateAvailable: 'Update verfügbar',
+    updateMessage: 'Eine neue Version ({version}) ist auf GitHub verfügbar. Jetzt aktualisieren?',
+    updateNow: 'Jetzt updaten',
+    updateLater: 'Später',
   },
   en: {
     dashboard: 'Dashboard', macros: 'Macros', fasting: 'Fasting',
     calendar: 'Calendar', sport: 'Exercise', weight: 'Weight',
-    recipes: 'Recipes', export: 'Export', settings: 'Settings', support: 'Support',
+    recipes: 'Recipes', export: 'Export', settings: 'Settings', support: 'Support', ketoChecker: 'Keto-Check',
     calendarTitle: 'Calendar',
     noEntries: 'No entries for this day',
     ketoOk: 'Keto ✓', carbsHigh: 'Carbs high',
@@ -347,6 +381,27 @@ export const t = {
     savedOk: 'Saved ✓',
     createProfile: 'Create profile & start',
     footerLocal: 'All data stored locally',
+    // Sync
+    linkDevicesTitle: 'Link devices',
+    linkDevicesBtn: 'Link device',
+    yourDeviceId: 'Your device ID',
+    lastSynced: 'Last synced',
+    syncHostTitle: 'Show device',
+    syncHostDesc: 'Display QR code for the other device to scan',
+    syncJoinTitle: 'Connect',
+    syncJoinDesc: 'Enter the code shown on the other device',
+    syncHostInstructions: 'Scan this QR code with your other device, or enter the code manually.',
+    syncJoinInstructions: 'Enter the code shown on the other device.',
+    orEnterCode: 'or enter code manually',
+    enterDeviceCode: 'Device code',
+    syncConnect: 'Connect',
+    syncConnecting: 'Connecting…',
+    syncConnected: 'Connected',
+    syncSyncing: 'Syncing…',
+    syncDone: 'Sync complete ✓',
+    syncError: 'Connection error',
+    syncRetry: 'Try again',
+    back: 'Back',
     // Sport
     sportTitle: 'Exercise',
     addSession: 'Session',
@@ -395,6 +450,14 @@ export const t = {
     ratingGood: 'Good day',
     ratingOkay: 'Okay day',
     ratingBad: 'Could be better',
+    ratingReason: (carbsOk: boolean, kcalOk: boolean, proteinOk: boolean) => {
+      const good: string[] = []
+      const bad: string[] = []
+      if (carbsOk) good.push('Carbs on target ✓'); else bad.push('Carbs exceeded ✗')
+      if (kcalOk) good.push('Calories in range ✓'); else bad.push('Calories out of range ✗')
+      if (proteinOk) good.push('Protein reached ✓'); else bad.push('Protein too low ✗')
+      return [...good, ...bad].join(' · ')
+    },
     inKetosis: 'In ketosis',
     outOfKetosis: 'Out of ketosis',
     todaySummary: 'Today',
@@ -571,8 +634,13 @@ export const t = {
     notifWeightTime: 'Time',
     notifSaveOk: 'Reminders saved ✓',
     notifPermDenied: 'Notifications are disabled – please allow them in system settings.',
-        version: 'v1.0.0',
+        version: 'v1.1.0',
     tagline: 'Your keto companion',
+    // Update dialog
+    updateAvailable: 'Update available',
+    updateMessage: 'A new version ({version}) is available on GitHub. Update now?',
+    updateNow: 'Update now',
+    updateLater: 'Later',
   },
 }
 

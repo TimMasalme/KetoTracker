@@ -1,13 +1,9 @@
 /**
- * Local Reminders – zero extra dependencies
+ * Local Reminders
  *
  * Strategie:
- *  1. Capacitor (@capacitor/local-notifications) – wenn installiert & auf Device
- *  2. Web Notification API + setTimeout – als Web-Fallback
- *
- * Vite sieht keinen statischen Import von @capacitor/local-notifications,
- * daher kein Resolve-Fehler beim Build. Der dynamische import() wird erst
- * zur Laufzeit ausgeführt und schlägt im Browser sauber fehl (catch → null).
+ *  1. Capacitor (@capacitor/local-notifications) – wenn auf nativem Device
+ *  2. Web Notification API + setTimeout – als Web/Electron-Fallback
  */
 
 import { useEffect } from 'react'
@@ -51,7 +47,6 @@ function isFuture(d: Date) {
 }
 
 // ─── Web-Notification Fallback ────────────────────────────────────────────────
-// Aktive setTimeout-Handles, damit wir sie beim Neuplan löschen können
 const activeTimers: ReturnType<typeof setTimeout>[] = []
 
 function clearWebTimers() {
@@ -80,22 +75,17 @@ async function scheduleWebNotifications(jobs: ReminderJob[]) {
   }
 }
 
-// ─── Capacitor Plugin (optional, lazy) ───────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// ─── Capacitor Plugin ─────────────────────────────────────────────────────────
+// Bugfix: @capacitor/local-notifications is now a proper dependency.
+// We still use a try/catch so it gracefully falls back in web/Electron builds.
 async function tryCapacitor(jobs: ReminderJob[]): Promise<boolean> {
   try {
-    // Dynamischer Import – schlägt im Browser sauber fehl ohne Build-Fehler,
-    // weil Vite den String nicht statisch auflösen kann wenn er aus einer
-    // Variablen kommt.
-    const pkg = '@capacitor/local-notifications'
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const mod: any = await (Function('p', 'return import(p)')(pkg))
-    const { LocalNotifications } = mod
+    const { LocalNotifications } = await import('@capacitor/local-notifications')
 
     const perm = await LocalNotifications.requestPermissions()
     if (perm.display !== 'granted') return false
 
-    // Alle alten Reminder löschen
+    // Cancel any previously scheduled reminders with matching IDs
     await LocalNotifications.cancel({
       notifications: jobs.map((j) => ({ id: j.id })),
     })
@@ -113,6 +103,7 @@ async function tryCapacitor(jobs: ReminderJob[]): Promise<boolean> {
 
     return true
   } catch {
+    // Not a native device or plugin unavailable – fall back to Web API
     return false
   }
 }
@@ -177,7 +168,7 @@ export async function scheduleReminders(
 
   if (jobs.length === 0) return
 
-  // Capacitor zuerst (Native App), sonst Web API (Browser / Electron)
+  // Capacitor zuerst (native App), sonst Web API (Browser / Electron)
   const usedCapacitor = await tryCapacitor(jobs)
   if (!usedCapacitor) {
     await scheduleWebNotifications(jobs)

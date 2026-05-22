@@ -5,38 +5,25 @@ import type { ActiveTab } from '@/types'
 import {
   LayoutDashboard, Utensils, Timer, Dumbbell,
   Scale, BookOpen, Settings, CalendarDays, Download,
-  MoreHorizontal, X, Heart,
+  MoreHorizontal, X, Heart, ScanBarcode,
 } from 'lucide-react'
+import { useUpdateChecker } from '@/hooks/useUpdateChecker'
+import UpdateDialog from '@/components/update/UpdateDialog'
 
 interface NavItem { id: ActiveTab; labelKey: keyof typeof t['de']; icon: React.ReactNode }
 
-const navItems: NavItem[] = [
-  { id: 'dashboard', labelKey: 'dashboard', icon: <LayoutDashboard size={20} /> },
-  { id: 'macros',    labelKey: 'macros',    icon: <Utensils size={20} /> },
-  { id: 'fasting',   labelKey: 'fasting',   icon: <Timer size={20} /> },
-  { id: 'calendar',  labelKey: 'calendar',  icon: <CalendarDays size={20} /> },
-  { id: 'sport',     labelKey: 'sport',     icon: <Dumbbell size={20} /> },
-  { id: 'weight',    labelKey: 'weight',    icon: <Scale size={20} /> },
-  { id: 'recipes',   labelKey: 'recipes',   icon: <BookOpen size={20} /> },
-  { id: 'export',    labelKey: 'export',    icon: <Download size={20} /> },
-  { id: 'settings',  labelKey: 'settings',  icon: <Settings size={20} /> },
-  { id: 'support',   labelKey: 'support',   icon: <Heart size={20} /> },
-]
-
-// Bottom bar: 4 main tabs + "More" button (remaining items in drawer)
-const primaryMobileNav = [
-  navItems[0], // dashboard
-  navItems[1], // macros
-  navItems[2], // fasting
-  navItems[5], // weight
-]
-const secondaryMobileNav = [
-  navItems[3], // calendar
-  navItems[4], // sport
-  navItems[6], // recipes
-  navItems[7], // export
-  navItems[8], // settings
-  navItems[9], // support
+export const allNavItems: NavItem[] = [
+  { id: 'dashboard',   labelKey: 'dashboard',   icon: <LayoutDashboard size={20} /> },
+  { id: 'macros',      labelKey: 'macros',      icon: <Utensils size={20} /> },
+  { id: 'fasting',     labelKey: 'fasting',     icon: <Timer size={20} /> },
+  { id: 'ketochecker', labelKey: 'ketoChecker', icon: <ScanBarcode size={20} /> },
+  { id: 'calendar',    labelKey: 'calendar',    icon: <CalendarDays size={20} /> },
+  { id: 'sport',       labelKey: 'sport',       icon: <Dumbbell size={20} /> },
+  { id: 'weight',      labelKey: 'weight',      icon: <Scale size={20} /> },
+  { id: 'recipes',     labelKey: 'recipes',     icon: <BookOpen size={20} /> },
+  { id: 'export',      labelKey: 'export',      icon: <Download size={20} /> },
+  { id: 'settings',    labelKey: 'settings',    icon: <Settings size={20} /> },
+  { id: 'support',     labelKey: 'support',     icon: <Heart size={20} /> },
 ]
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -44,22 +31,37 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const setActiveTab = useKetoStore((s) => s.setActiveTab)
   const lang         = useKetoStore((s) => s.lang)
   const setLang      = useKetoStore((s) => s.setLang)
+  const bottomNavIds = useKetoStore((s) => s.bottomNavIds)
   const tr           = t[lang]
 
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const { updateInfo, dismiss } = useUpdateChecker()
 
   function navigate(id: ActiveTab) {
     setActiveTab(id)
     setDrawerOpen(false)
   }
 
-  const allMobileItems = [...primaryMobileNav, ...secondaryMobileNav]
+  // Build primary nav from stored IDs (up to 4)
+  const primaryMobileNav = bottomNavIds
+    .slice(0, 4)
+    .map((id) => allNavItems.find((n) => n.id === id))
+    .filter(Boolean) as NavItem[]
+
+  // Secondary = everything NOT in primary
+  const secondaryMobileNav = allNavItems.filter(
+    (item) => !bottomNavIds.slice(0, 4).includes(item.id)
+  )
+
   const isSecondary = secondaryMobileNav.some((n) => n.id === activeTab)
 
   return (
     <div className="flex h-dvh overflow-hidden bg-cream-100">
       {/* Sidebar (desktop) */}
-      <aside className="hidden md:flex flex-col w-56 bg-white border-r border-cream-200 shrink-0 py-6 px-4">
+      <aside
+        className="hidden md:flex flex-col w-56 bg-white border-r border-cream-200 shrink-0 py-6 px-4"
+        ref={(el) => { if (el) document.documentElement.style.setProperty('--sidebar-w', el.offsetWidth + 'px') }}
+      >
         <div className="mb-6 px-2 flex items-start justify-between">
           <div>
             <h1 className="font-display text-xl font-semibold text-charcoal-900">
@@ -76,7 +78,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </button>
         </div>
         <nav className="flex flex-col gap-1 flex-1">
-          {navItems.map((item) => (
+          {allNavItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveTab(item.id)}
@@ -179,6 +181,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </button>
         </div>
       </nav>
+      {/* Update dialog */}
+      {updateInfo && <UpdateDialog info={updateInfo} onDismiss={dismiss} />}
     </div>
   )
 }

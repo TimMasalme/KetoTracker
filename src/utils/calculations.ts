@@ -109,6 +109,22 @@ export function rateDayMacros(
   return 'bad'
 }
 
+export function rateDayDetails(
+  entries: MacroEntry[],
+  sport: SportEntry[],
+  targets: MacroTargets
+): { carbsOk: boolean; kcalOk: boolean; proteinOk: boolean } {
+  const totals = sumMacros(entries)
+  const burned = sport.reduce((s, e) => s + (e.kcalBurned ?? 0), 0)
+  const netKcal = totals.kcal - burned
+  const nc = netCarbs(totals.carbsG, totals.fiberG)
+  return {
+    carbsOk:   nc <= targets.carbsG,
+    kcalOk:    netKcal <= targets.kcal && netKcal >= targets.kcal * 0.7,
+    proteinOk: totals.proteinG >= targets.proteinG * 0.85,
+  }
+}
+
 export function sumMacros(entries: MacroEntry[]) {
   return entries.reduce(
     (acc, e) => ({

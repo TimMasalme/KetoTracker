@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useKetoStore } from '@/store'
-import { sumMacros, rateDayMacros, toDateKey, netCarbs, calculateTDEE } from '@/utils/calculations'
+import { sumMacros, rateDayMacros, rateDayDetails, toDateKey, netCarbs, calculateTDEE } from '@/utils/calculations'
 import type { MacroEntry, SportEntry } from '@/types'
 
 // ─── TODAY'S DATA ─────────────────────────────────────────────────────────────
@@ -17,12 +17,16 @@ export function useToday() {
     () => rateDayMacros(todayFood, todaySport, macroTargets),
     [todayFood, todaySport, macroTargets]
   )
+  const ratingDetails = useMemo(
+    () => rateDayDetails(todayFood, todaySport, macroTargets),
+    [todayFood, todaySport, macroTargets]
+  )
 
   const netCarbsToday = netCarbs(totals.carbsG, totals.fiberG)
   const inKetosis     = netCarbsToday <= macroTargets.carbsG
   const kcalBurned    = todaySport.reduce((s, e) => s + (e.kcalBurned ?? 0), 0)
 
-  return { today, todayFood, todaySport, totals, netCarbsToday, rating, inKetosis, kcalBurned }
+  return { today, todayFood, todaySport, totals, netCarbsToday, rating, ratingDetails, inKetosis, kcalBurned }
 }
 
 // ─── DATE RANGE LOG ───────────────────────────────────────────────────────────
